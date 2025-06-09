@@ -6,7 +6,7 @@ services:
     build:
       context: dockerindockerjenkins
     ports:
-      - "8080:8080"
+      - 8080:8080
     volumes:
       - "/home/jenkins_home:/var/jenkins_home"
     networks:
@@ -15,8 +15,8 @@ services:
     container_name: rabbitmq_dev
     image: rabbitmq:3.9-management
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - 15672:15672
+      - 5672:5672
     volumes:
       - "/home/rabbitmq_home:/var/rabbitmq_home"
     networks:
@@ -28,7 +28,7 @@ services:
       - SA_PASSWORD=Master@123
       - ACCEPT_EULA=Y
     ports:
-      - "1433:1433"
+      - 1433:1433
     volumes:
       - "/mnt/development/docker-volumes/mssql_home:/var/mssql_home"
     networks:
@@ -55,5 +55,15 @@ services:
       - /mnt/development/docker-volumes/postgresql_home:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: Master@123
+  h2-db:
+    image: oscarfonts/h2
+    container_name: h2-database
+    ports:
+      - 1521:1521
+      - 81:81
+    environment:
+      - H2_OPTIONS=-ifNotExists
+    volumes:
+      - /mnt/development/docker-volumes/h2_db_home:/opt/h2-data
 networks:
   net:
