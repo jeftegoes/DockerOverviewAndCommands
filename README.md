@@ -53,6 +53,12 @@
 
 - A container is a standard unit of software that packages up code and all its dependencies so, the application runs quickly and reliably from one computing environment to another.
 - A Docker container image is a lightweight, standalone, executable package of software that includes everything needed to run an application.
+- **Recommended Naming Pattern**
+  | Project | Service | Environment | Instance | Container Name |
+  |-------------|-----------|-------------|----------|-----------------------------|
+  | `crm` | `backend` | `prod` | `1` | `crm-backend-prod-1` |
+  | `myapp` | `web` | `dev` | `01` | `myapp-web-dev-01` |
+  | `inventory` | `api` | `stage` | `alpha` | `inventory-api-stage-alpha` |
 
 # 2. Instalation in Windows 10
 
@@ -103,6 +109,10 @@
 - Build Dockerfile
   - docker build .
   - docker build --tag `<tag_name>` .
+- Create a docker network
+  - docker network create `<network_name>`
+- Export a docker image
+  - docker save -o `<file_name_output>` `<name_image>`
 
 # 4. Dockerfile structure
 
@@ -162,7 +172,6 @@
 ## 5.2. Docker Compose template
 
 ```
-version: '3'
 services:
   my_service:
     container_name: CONTAINER_NAME

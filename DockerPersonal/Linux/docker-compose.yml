@@ -1,4 +1,5 @@
-version: "3.9"
+# docker network create linux_net
+
 services:
   jenkins:
     container_name: jenkins_dev
@@ -10,7 +11,7 @@ services:
     volumes:
       - "/home/jenkins_home:/var/jenkins_home"
     networks:
-      - net
+      - linux_net
   rabbitmq:
     container_name: rabbitmq_dev
     image: rabbitmq:3.9-management
@@ -20,10 +21,12 @@ services:
     volumes:
       - "/home/rabbitmq_home:/var/rabbitmq_home"
     networks:
-      - net
+      - linux_net
   mssql:
     container_name: mssql_dev
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    build:
+      context: .
+      dockerfile: mssql/Dockerfile
     environment:
       - SA_PASSWORD=Master@123
       - ACCEPT_EULA=Y
@@ -32,7 +35,7 @@ services:
     volumes:
       - "/mnt/development/docker-volumes/mssql_home:/var/mssql_home"
     networks:
-      - net
+      - linux_net
   mysql:
     container_name: mysql_dev
     image: mysql
@@ -44,7 +47,7 @@ services:
     ports:
       - 3306:3306
     networks:
-      - net
+      - linux_net
   postgresql:
     container_name: postgresql_dev
     image: postgres
@@ -55,6 +58,8 @@ services:
       - /mnt/development/docker-volumes/postgresql_home:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: Master@123
+    networks:
+      - linux_net
   h2-db:
     image: oscarfonts/h2
     container_name: h2-database
@@ -65,5 +70,31 @@ services:
       - H2_OPTIONS=-ifNotExists
     volumes:
       - /mnt/development/docker-volumes/h2_db_home:/opt/h2-data
+  nginx:
+    container_name: nginx_dev
+    image: nginx
+    volumes:
+      - /mnt/development/docker-volumes/nginx_home:/etc/nginx/templates
+    ports:
+      - 8080:80
+    environment:
+      - NGINX_HOST=foobar.com
+      - NGINX_PORT=80
+    networks:
+      - linux_net
+  nginx-proxy-manager:
+    container_name: nginx_proxy_manager_dev
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    volumes:
+      - /mnt/development/docker-volumes/nginx_home:/data
+      - /mnt/development/docker-volumes/nginx_home:/etc/letsencrypt
+    networks:
+      - linux_net
 networks:
-  net:
+  linux_net:
+    driver: bridge
